@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+  rpc ValidateCredential (ValidateRequest) returns (ValidateResponse);
+  rpc GetUserPayload (UserPayloadRequest) returns (UserPayloadResponse);
+  rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
+}
+
+message ChangePasswordRequest {
+  string userId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+
+message ChangePasswordResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ValidateRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message ValidateResponse {
+  string id = 1;
+  bool isValid = 2;
+}
+
+message UserPayloadRequest {
+  string id = 1;
+}
+
+message UserPayloadResponse {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string name = 4;
+  string division_id = 5;
+  string position_id = 6;
+  repeated string roles = 10;
+  repeated string permissions = 11;
+}

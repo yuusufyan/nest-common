@@ -1,0 +1,1 @@
+export declare const METRICS_SERVICE_NAME = "METRICS_SERVICE_NAME";

@@ -1,0 +1,31 @@
+import { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as amqp from 'amqplib';
+export declare class RabbitMQService implements OnModuleInit, OnModuleDestroy {
+    private readonly configService;
+    private readonly logger;
+    private connection;
+    private channel;
+    private url;
+    private shuttingDown;
+    private reconnectTimer;
+    private readonly reconnectDelayMs;
+    private readonly registeredConsumers;
+    private readonly publishTimeoutMs;
+    private readonly publishMaxAttempts;
+    private readonly publishRetryDelayMs;
+    constructor(configService: ConfigService);
+    onModuleInit(): Promise<void>;
+    private connect;
+    private scheduleReconnect;
+    onModuleDestroy(): Promise<void>;
+    private assertQueueWithDlx;
+    publish(queueName: string, payload: unknown): Promise<void>;
+    private publishOnce;
+    private sleep;
+    private doPublish;
+    private withTimeout;
+    consume(queueName: string, handler: (payload: any, msg: amqp.ConsumeMessage) => Promise<void>): Promise<void>;
+    private startConsuming;
+    private safeNack;
+}
