@@ -8,6 +8,13 @@ import {
 import { Response } from 'express';
 import { ApiResponse } from '../interfaces/response.interface';
 
+// Fail closed: raw error text (hosts, SQL, stack hints) is only echoed to the
+// client when the environment is explicitly a local one, never when NODE_ENV
+// is 'production', unset, or anything unexpected.
+function exposesInternalErrors(): boolean {
+  return ['development', 'test'].includes(process.env.NODE_ENV ?? '');
+}
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
@@ -33,11 +40,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // Silent Bug Fix: Database errors should not leak raw SQL to users
       status = HttpStatus.BAD_REQUEST;
       message = 'Operation failed due to invalid data format or constraint violation.';
-      details = process.env.NODE_ENV !== 'production' ? exception.message : null;
+      details = exposesInternalErrors() ? exception.message : null;
     } else if (exception instanceof Error) {
-      message = exception.message;
+      // Unknown errors (e.g. DB connection failures) may carry internal hosts.
+      if (exposesInternalErrors()) message = exception.message;
     } else if (typeof exception === 'string') {
-      message = exception;
+      if (exposesInternalErrors()) message = exception;
     } else {
       message = 'An unexpected error occurred';
     }

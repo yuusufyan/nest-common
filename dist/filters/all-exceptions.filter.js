@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AllExceptionsFilter = void 0;
 const common_1 = require("@nestjs/common");
+function exposesInternalErrors() {
+    return ['development', 'test'].includes(process.env.NODE_ENV ?? '');
+}
 let AllExceptionsFilter = class AllExceptionsFilter {
     catch(exception, host) {
         const ctx = host.switchToHttp();
@@ -29,13 +32,15 @@ let AllExceptionsFilter = class AllExceptionsFilter {
         else if (exception.name === 'QueryFailedError') {
             status = common_1.HttpStatus.BAD_REQUEST;
             message = 'Operation failed due to invalid data format or constraint violation.';
-            details = process.env.NODE_ENV !== 'production' ? exception.message : null;
+            details = exposesInternalErrors() ? exception.message : null;
         }
         else if (exception instanceof Error) {
-            message = exception.message;
+            if (exposesInternalErrors())
+                message = exception.message;
         }
         else if (typeof exception === 'string') {
-            message = exception;
+            if (exposesInternalErrors())
+                message = exception;
         }
         else {
             message = 'An unexpected error occurred';
