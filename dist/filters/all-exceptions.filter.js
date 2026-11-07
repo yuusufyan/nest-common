@@ -28,6 +28,10 @@ let AllExceptionsFilter = class AllExceptionsFilter {
             else {
                 message = typeof res === 'string' ? res : res.message || exception.message;
             }
+            if (status >= 500 && !exposesInternalErrors()) {
+                message = 'Internal server error';
+                details = null;
+            }
         }
         else if (exception.name === 'QueryFailedError') {
             status = common_1.HttpStatus.BAD_REQUEST;

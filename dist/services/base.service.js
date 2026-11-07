@@ -38,7 +38,8 @@ let BaseService = BaseService_1 = class BaseService {
             if (error.name === 'QueryFailedError') {
                 throw new common_1.BadRequestException('The submitted data is invalid or violates system constraints.');
             }
-            throw new common_1.InternalServerErrorException(error.message);
+            this.logger.error(`[create] Failed to create entity: ${error?.message}`, error?.stack);
+            throw new common_1.InternalServerErrorException('Failed to create data.');
         }
     }
     async findAll(payload, relations = [], callback, searchFields, builder) {

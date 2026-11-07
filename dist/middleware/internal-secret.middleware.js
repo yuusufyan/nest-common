@@ -24,7 +24,7 @@ let InternalSecretMiddleware = InternalSecretMiddleware_1 = class InternalSecret
     }
     use(req, res, next) {
         if (!this.expectedSecret) {
-            throw new common_1.ForbiddenException('Service misconfigured: INTERNAL_SERVICE_SECRET is not set.');
+            throw new common_1.ForbiddenException('Direct access to this service is not allowed. Route through the API gateway.');
         }
         const incomingSecret = req.headers['x-internal-secret'];
         if (!incomingSecret || incomingSecret !== this.expectedSecret) {
