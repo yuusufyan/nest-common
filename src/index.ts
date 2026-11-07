@@ -31,6 +31,10 @@ export * from './rabbitmq/rabbitmq.constants';
 export * from './rabbitmq/rabbitmq.service';
 export * from './rabbitmq/rabbitmq.module';
 
+// Auth
+export * from './auth/jwt-auth.guard';
+export * from './auth/current-user.decorator';
+
 // Middleware
 export * from './middleware/jwt-decoder.middleware';
 export * from './middleware/internal-secret.middleware';

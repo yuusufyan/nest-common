@@ -33,6 +33,8 @@ __exportStar(require("./redis/redis.module"), exports);
 __exportStar(require("./rabbitmq/rabbitmq.constants"), exports);
 __exportStar(require("./rabbitmq/rabbitmq.service"), exports);
 __exportStar(require("./rabbitmq/rabbitmq.module"), exports);
+__exportStar(require("./auth/jwt-auth.guard"), exports);
+__exportStar(require("./auth/current-user.decorator"), exports);
 __exportStar(require("./middleware/jwt-decoder.middleware"), exports);
 __exportStar(require("./middleware/internal-secret.middleware"), exports);
 __exportStar(require("./metrics/metrics.constants"), exports);
