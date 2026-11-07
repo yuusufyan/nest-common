@@ -57,7 +57,9 @@ export abstract class BaseService<T extends HasId & HasStatus> {
       if (error.name === 'QueryFailedError') {
         throw new BadRequestException('The submitted data is invalid or violates system constraints.');
       }
-      throw new InternalServerErrorException(error.message);
+      // Driver errors can carry internal hosts; keep them in the logs only.
+      this.logger.error(`[create] Failed to create entity: ${error?.message}`, error?.stack);
+      throw new InternalServerErrorException('Failed to create data.');
     }
   }
 

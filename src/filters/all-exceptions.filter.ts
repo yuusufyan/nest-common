@@ -36,6 +36,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       } else {
         message = typeof res === 'string' ? res : res.message || exception.message;
       }
+
+      // 5xx messages are often built from internal errors, e.g.
+      // `new InternalServerErrorException(err.message)`; never echo them.
+      if (status >= 500 && !exposesInternalErrors()) {
+        message = 'Internal server error';
+        details = null;
+      }
     } else if (exception.name === 'QueryFailedError') {
       // Silent Bug Fix: Database errors should not leak raw SQL to users
       status = HttpStatus.BAD_REQUEST;

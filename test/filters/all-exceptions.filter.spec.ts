@@ -1,4 +1,9 @@
-import { ArgumentsHost, NotFoundException } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  InternalServerErrorException,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { AllExceptionsFilter } from '../../src/filters/all-exceptions.filter';
 
 const INTERNAL_HOST = '10.20.30.40:5432';
@@ -90,6 +95,18 @@ describe('AllExceptionsFilter', () => {
       expect(body.message).toBe('User not found');
     });
 
+    it.each([
+      ['InternalServerErrorException', () => new InternalServerErrorException(`connect ECONNREFUSED ${INTERNAL_HOST}`)],
+      ['ServiceUnavailableException', () => new ServiceUnavailableException(`redis at ${INTERNAL_HOST} is down`)],
+    ])('does not expose messages of 5xx %s', (_name, make) => {
+      const { status, body } = run(make());
+
+      expect(status).toBeGreaterThanOrEqual(500);
+      expect(body.message).toBe('Internal server error');
+      expect(body.data).toBeNull();
+      expect(JSON.stringify(body)).not.toContain(INTERNAL_HOST);
+    });
+
     it('still logs the full error server-side', () => {
       const err = connectionError();
       run(err);
@@ -105,6 +122,12 @@ describe('AllExceptionsFilter', () => {
 
     it('exposes raw error messages to ease debugging', () => {
       const { body } = run(connectionError());
+
+      expect(body.message).toContain(INTERNAL_HOST);
+    });
+
+    it('exposes messages of 5xx HttpExceptions', () => {
+      const { body } = run(new InternalServerErrorException(`connect ECONNREFUSED ${INTERNAL_HOST}`));
 
       expect(body.message).toContain(INTERNAL_HOST);
     });

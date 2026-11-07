@@ -234,3 +234,24 @@ describe('BaseService.findAll sortBy handling', () => {
     });
   });
 });
+
+describe('BaseService.create error handling', () => {
+  it('does not put raw driver error text into the thrown exception', async () => {
+    const { service, repo } = makeService();
+    repo.create = jest.fn((row: any) => row);
+    repo.save = jest.fn(async () => {
+      throw new Error('connect ECONNREFUSED 10.20.30.40:5432');
+    });
+    const loggerError = jest
+      .spyOn((service as any).logger, 'error')
+      .mockImplementation(() => undefined);
+
+    const thrown: any = await service.create({ name: 'x' }).catch((e) => e);
+
+    expect(thrown.getStatus()).toBe(500);
+    expect(JSON.stringify(thrown.getResponse())).not.toContain('10.20.30.40');
+    expect(thrown.message).not.toContain('10.20.30.40');
+    // The original error is still available server-side for debugging.
+    expect(loggerError).toHaveBeenCalled();
+  });
+});

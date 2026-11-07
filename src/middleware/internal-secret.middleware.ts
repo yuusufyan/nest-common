@@ -39,8 +39,10 @@ export class InternalSecretMiddleware implements NestMiddleware {
     }
 
     use(req: Request, res: Response, next: NextFunction) {
+        // The misconfiguration is reported in the logs at startup; callers get
+        // the same answer as a wrong secret so it is not advertised to them.
         if (!this.expectedSecret) {
-            throw new ForbiddenException('Service misconfigured: INTERNAL_SERVICE_SECRET is not set.');
+            throw new ForbiddenException('Direct access to this service is not allowed. Route through the API gateway.');
         }
 
         const incomingSecret = req.headers['x-internal-secret'] as string;
