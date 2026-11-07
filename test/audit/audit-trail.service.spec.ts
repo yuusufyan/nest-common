@@ -1,7 +1,3 @@
-// uuid@14 ships ESM only, which jest's CommonJS runtime cannot parse; the
-// service under test never generates ids itself.
-jest.mock('uuid', () => ({ v4: () => '00000000-0000-4000-8000-000000000000' }));
-
 import { AuditAction } from '../../src/audit/audit-trail.entity';
 import { AuditTrailService } from '../../src/audit/audit-trail.service';
 import { stringTruncatedMarker } from '../../src/shared/safe-json';

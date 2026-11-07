@@ -2,6 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "incremental": false,
+    "module": "esnext",
+    "moduleResolution": "node",
     "types": ["jest", "node"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
